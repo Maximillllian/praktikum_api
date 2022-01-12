@@ -1,5 +1,6 @@
 import os
 import re
+import requests
 from termcolor import colored, cprint
 from compress_html import compress_html
 
@@ -39,6 +40,19 @@ def parse_course_and_theme_name(path_array):
         theme_name = course_name
     
     return course_name, theme_name
+
+
+def post_data(type, data):
+    url = 'https://cryptodeputat.pythonanywhere.com/api/create/' + type
+    requests.post(url, data)
+
+
+def get_obj_or_false(type, slug):
+    url = f'https://cryptodeputat.pythonanywhere.com/api/{type}/{slug}'
+    res = requests.get(url)
+    if res.status_code == 200:
+        return res.text
+    return False
 
 
 LESSONS_PATH = r'D:\Courses\Yandex.Designer_interfaces\[SW.BAND] [Яндекс.Практикум] Профессия Дизайнер интерфейсов (2020) [Часть 1 из 7]\[SW.BAND] [Яндекс.Практикум] Профессия Дизайнер интерфейсов (2020) [Часть 1 из 7]'

@@ -18,6 +18,16 @@ class CoursesListView(generics.ListAPIView):
     serializer_class = CourseSerializer
 
 
+class CourseView(generics.RetrieveAPIView):
+    permissions = [permissions.AllowAny]
+    serializer_class = CourseSerializer
+
+    def get_object(self, *args, **kwargs):
+        course_slug = self.kwargs['course_slug']
+        course = Course.objects.get(slug=course_slug)
+        return course
+
+
 class ThemesListView(generics.ListAPIView):
     permissions = [permissions.AllowAny]
     serializer_class = ThemeSerializer
@@ -33,11 +43,8 @@ class ThemeView(generics.RetrieveAPIView):
     serializer_class = ThemeSerializer
 
     def get_object(self, *args, **kwargs):
-        course_slug = self.kwargs['course_slug']
         theme_slug = self.kwargs['theme_slug']
-        course = Course.objects.get(slug=course_slug)
-        theme = course.themes.get(slug=theme_slug)
-        # theme['is_lates'] = True
+        theme = Theme.objects.get(slug=theme_slug)
         return theme
 
 
