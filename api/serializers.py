@@ -42,7 +42,7 @@ class CreateCourseSerializer(serializers.ModelSerializer):
 
 class CreateThemeSerializer(serializers.ModelSerializer):
     course = serializers.SlugRelatedField(
-        slug_field='slug',  queryset=Course.objects.all()
+        slug_field='slug', queryset=Course.objects.all()
     )
     
     class Meta:
@@ -54,7 +54,7 @@ class CreateLessonSerializer(serializers.ModelSerializer):
     theme = serializers.SlugRelatedField(
         slug_field='slug', queryset=Theme.objects.all()
     )
-    
+
     class Meta:
         model = Lesson
         fields = ['title', 'order', 'text', 'theme']

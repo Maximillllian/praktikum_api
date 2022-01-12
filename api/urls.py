@@ -16,7 +16,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('auth/', include(auth_urlpatterns)),
     path('courses/', views.CoursesListView.as_view(), name='courses_list'),
-    path('theme/<slug:course_slug>', views.CourseView.as_view(), name='course'),
+    path('course/<slug:course_slug>', views.CourseView.as_view(), name='course'),
     path('theme/<slug:theme_slug>', views.ThemeView.as_view(), name='theme'),
     path('lesson/<slug:lesson_slug>', views.LessonView.as_view(), name='lesson'),
     path('lesson/<slug:lesson_slug>/theme', views.LessonThemeView.as_view(), name='theme'),

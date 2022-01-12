@@ -1,6 +1,9 @@
 import os
 import re
-import requests
+import requests_async as requests
+import asyncio
+from django.core.checks.messages import Error
+from slugify import slugify
 from termcolor import colored, cprint
 from compress_html import compress_html
 
@@ -42,14 +45,16 @@ def parse_course_and_theme_name(path_array):
     return course_name, theme_name
 
 
-def post_data(type, data):
+async def post_data(type, data):
     url = 'https://cryptodeputat.pythonanywhere.com/api/create/' + type
-    requests.post(url, data)
+    res = await requests.post(url, json=data)
+    return res
 
 
-def get_obj_or_false(type, slug):
+async def get_obj_or_false(type, slug):
     url = f'https://cryptodeputat.pythonanywhere.com/api/{type}/{slug}'
-    res = requests.get(url)
+    res = await requests.get(url)
+    cprint(res, 'green')
     if res.status_code == 200:
         return res.text
     return False
@@ -65,43 +70,34 @@ courses = []
 themes = []
 order = 0
 
-for root, dirs, files in tree:
-  
-    for file in files:
-        file_extension = file.split('.')[-1]
-        if file_extension in ('html', 'txt'):
-            path = path_array(root, LESSONS_PATH)
-            course_name, theme_name = parse_course_and_theme_name(path)
-            lesson_name = '.'.join(file.split('.')[:-1])
-
-            finded_course = models.Course.objects.get_or_create(title=course_name)[0]
-
-            theme = models.Theme.objects.get_or_create(title=theme_name, course=finded_course)
-            finded_theme = theme[0]
-            is_theme_created = theme[1]
-
-            if finded_theme.title not in themes:
-                order = 0
-                themes.append(finded_theme.title)
-                
-            raw_html = compress_html(f'{root}\{file}')
-            finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
-            order += 1
-
-            # print(finded_course, finded_theme, finded_lesson)
-            
-
-            # if course_name not in courses:
-            #     courses.append(course_name)
-            #     cprint(f'COURSE: {course_name}', 'cyan')
-            
-            # if theme_name not in themes:
-            #     themes.append(theme_name)
-            #     cprint(f'   THEME: {theme_name}', 'green')
-            
-            # print(f'      {file}')
-    # print_tree_items(root, dirs, files)
+async def main():
+    for root, dirs, files in tree:
     
+        for file in files:
+            file_extension = file.split('.')[-1]
+            if file_extension in ('html', 'txt'):
+                path = path_array(root, LESSONS_PATH)
+                course_name, theme_name = parse_course_and_theme_name(path)
+                lesson_name = '.'.join(file.split('.')[:-1])
 
+                course = await get_obj_or_false('course', slugify(course_name))
+                course_data = {"title": course_name}
+                res = await post_data('course', course_data)
+                cprint(slugify(course_name), 'red')
+                cprint(f'Создали курс с респонзем: {res},\n сам курс - {course}', 'cyan')
+                raise Error
+                finded_course = models.Course.objects.get_or_create(title=course_name)[0]
 
+                theme = models.Theme.objects.get_or_create(title=theme_name, course=finded_course)
+                finded_theme = theme[0]
 
+                if finded_theme.title not in themes:
+                    order = 0
+                    themes.append(finded_theme.title)
+                    
+                raw_html = compress_html(f'{root}\{file}')
+                finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
+                order += 1
+        
+
+asyncio.run(main())
