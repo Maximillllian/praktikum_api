@@ -14,6 +14,13 @@ auth_urlpatterns = [
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('auth/', include(auth_urlpatterns))
+    path('auth/', include(auth_urlpatterns)),
+    path('courses/', views.CoursesListView.as_view(), name='courses_list'),
+    path('lesson/<slug:lesson_slug>', views.LessonView.as_view(), name='lesson'),
+    path('lesson/<slug:lesson_slug>/theme', views.LessonThemeView.as_view(), name='theme'),
+    path('course/<slug:course_slug>/themes/', views.ThemesListView.as_view(), name='themes_list'),
+    path('course/<slug:course_slug>/theme/<slug:theme_slug>/', views.ThemeView.as_view(), name='theme'),
+    path('course/<slug:course_slug>/theme/<slug:theme_slug>/lessons', views.LessonsListView.as_view(), name='lessons_list'),
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
+

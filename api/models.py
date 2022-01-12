@@ -1,3 +1,90 @@
+from django.core import validators
+from slugify import slugify
 from django.db import models
+from django.core.validators import FileExtensionValidator
+from django.contrib.auth.models import User
 
-# Create your models here.
+class Course(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(blank=True, null=True)
+    order = models.IntegerField(default=0)
+    image = models.FileField(upload_to='pictures/', validators=[FileExtensionValidator(['svg', 'png', 'jpg', 'jpeg'])], blank=True, null=True)
+
+    class Meta:
+        ordering = ['title']
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Course, self).save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.title
+
+
+class Theme(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(blank=True, null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='themes')
+
+    class Meta:
+        ordering = ['title']
+    
+    def themes_of_course(self):
+        themes_of_course = self.course.themes.all()
+        return themes_of_course
+    
+    def current_theme_index(self):
+        for num, theme in enumerate(self.themes_of_course()):
+            if theme.id == self.id:
+                return num
+
+    def is_last(self):
+        last_theme = self.themes_of_course().reverse()[0]
+        return last_theme.id == self.id
+    
+    def is_first(self):
+        first_theme = self.themes_of_course()[0]
+        return first_theme.id == self.id
+    
+    def next_theme_first_lesson_slug(self):
+        if self.is_last():
+            return False
+        next_theme = self.themes_of_course()[self.current_theme_index() + 1]
+        return Lesson.objects.filter(theme=next_theme)[0].slug
+
+    def prev_theme_slug(self):
+        if self.is_first():
+            return False
+        return self.themes_of_course()[self.current_theme_index() - 1].slug
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        # self.is_last()
+        super(Theme, self).save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.title
+
+
+class Lesson(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(blank=True, null=True)
+    order = models.IntegerField()
+    text_file = models.FileField(upload_to='lessons_files/', blank=True, null=True, validators=[FileExtensionValidator(['txt', 'html'])])
+    text = models.TextField(blank=True, null=True)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, related_name='lessons')
+    user = models.ManyToManyField(User, related_name='lessons', blank=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        if self.text_file:
+            content = self.text_file.read().decode('utf-8', errors='ignore')
+            self.text = content
+        super(Lesson, self).save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.title
+    
