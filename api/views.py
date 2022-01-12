@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
-from .serializers import UserSerializer, CourseSerializer, ThemeSerializer, LessonSerializer
+from .serializers import UserSerializer, CourseSerializer, ThemeSerializer, LessonSerializer, CreateCourseSerializer, CreateThemeSerializer, CreateLessonSerializer
 from .models import Course, Theme, Lesson
 
 
@@ -72,3 +72,18 @@ class LessonThemeView(generics.RetrieveAPIView):
         lesson = Lesson.objects.get(slug=lesson_slug)
         return lesson.theme
 # Create your views here.
+
+
+class CreateCourseView(generics.CreateAPIView):
+    permissions = [permissions.AllowAny]
+    serializer_class = CreateCourseSerializer
+
+
+class CreateThemeView(generics.CreateAPIView):
+    permissions = [permissions.AllowAny]
+    serializer_class = CreateThemeSerializer
+
+
+class CreateLessonView(generics.CreateAPIView):
+    permissions = [permissions.AllowAny]
+    serializer_class = CreateLessonSerializer
