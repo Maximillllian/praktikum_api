@@ -56,8 +56,27 @@ async def get_obj_or_false(type, slug):
     res = await requests.get(url)
     cprint(res, 'green')
     if res.status_code == 200:
-        return res.text
+        return res.json()
     return False
+
+
+async def get_or_create_object(type, data):
+    object = await get_obj_or_false(type, slugify(data['title']))
+    if object:
+        return object['slug']
+    res = await post_data(type, data)
+    slug = slugify(res.json()['title'])
+    return slug
+
+
+# async def get_or_create_theme(theme_name, course_slug):
+#     theme = await get_obj_or_false('theme', slugify(theme_name))
+#     if theme:
+#         return theme['slug']
+#     data = {"title": theme_name, "course": course_slug}
+#     res = await post_data('course', data)
+#     slug = slugify(res.json()['title'])
+#     return slug
 
 
 LESSONS_PATH = r'D:\Courses\Yandex.Designer_interfaces\[SW.BAND] [Яндекс.Практикум] Профессия Дизайнер интерфейсов (2020) [Часть 1 из 7]\[SW.BAND] [Яндекс.Практикум] Профессия Дизайнер интерфейсов (2020) [Часть 1 из 7]'
@@ -80,24 +99,29 @@ async def main():
                 course_name, theme_name = parse_course_and_theme_name(path)
                 lesson_name = '.'.join(file.split('.')[:-1])
 
-                course = await get_obj_or_false('course', slugify(course_name))
                 course_data = {"title": course_name}
-                res = await post_data('course', course_data)
-                cprint(slugify(course_name), 'red')
-                cprint(f'Создали курс с респонзем: {res},\n сам курс - {course}', 'cyan')
-                raise Error
-                finded_course = models.Course.objects.get_or_create(title=course_name)[0]
+                course_slug = await get_or_create_object('course', course_data)
 
-                theme = models.Theme.objects.get_or_create(title=theme_name, course=finded_course)
-                finded_theme = theme[0]
+                theme_data = {"title": theme_name, "course": course_slug}
+                theme_slug = await get_or_create_object('theme', theme_data)
 
-                if finded_theme.title not in themes:
+                if theme_slug not in themes:
                     order = 0
-                    themes.append(finded_theme.title)
+                    themes.append(theme_slug)
                     
                 raw_html = compress_html(f'{root}\{file}')
-                finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
+                lesson_data = {"title": lesson_name, "theme": theme_slug, "text": raw_html, "order": order}
+                lesson_slug = await get_or_create_object('lesson', lesson_data)
+
                 order += 1
+                # cprint(f'Создали курс с респонзем: {res},\n сам курс - {course}', 'cyan')
+                # finded_course = models.Course.objects.get_or_create(title=course_name)[0]
+
+                # theme = models.Theme.objects.get_or_create(title=theme_name, course=finded_course)
+                # finded_theme = theme[0]
+
+                # finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
+
         
 
 asyncio.run(main())
