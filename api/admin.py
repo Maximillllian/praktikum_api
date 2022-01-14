@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Sprint, Course, Theme, Lesson
+from .models import Sprint, Module, Theme, Lesson
 
 
 class ThemeInline(admin.TabularInline):
@@ -18,7 +18,7 @@ class SprintAdmin(admin.ModelAdmin):
     pass
 
 
-class CourseAdmin(admin.ModelAdmin):
+class ModuleAdmin(admin.ModelAdmin):
     inlines = [ThemeInline]
 
 
@@ -31,6 +31,6 @@ class LessonAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Sprint, SprintAdmin)
-admin.site.register(Course, CourseAdmin)
+admin.site.register(Module, ModuleAdmin)
 admin.site.register(Theme, ThemeAdmin)
 admin.site.register(Lesson, LessonAdmin)

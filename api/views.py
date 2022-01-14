@@ -3,8 +3,8 @@ from django.db.models import query
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
-from .serializers import UserSerializer, SprintSerializer, CourseSerializer, ThemeSerializer, LessonSerializer, CreateSprintSerializer, CreateCourseSerializer, CreateThemeSerializer, CreateLessonSerializer
-from .models import Sprint, Course, Theme, Lesson
+from .serializers import UserSerializer, SprintSerializer, ModuleSerializer, ThemeSerializer, LessonSerializer, CreateSprintSerializer, CreateModuleSerializer, CreateThemeSerializer, CreateLessonSerializer
+from .models import Sprint, Module, Theme, Lesson
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,20 +29,20 @@ class SprintView(generics.RetrieveAPIView):
         return sprint
 
 
-class CoursesListView(generics.ListAPIView):
+class ModulesListView(generics.ListAPIView):
     permissions = [permissions.AllowAny]
-    queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+    queryset = Module.objects.all()
+    serializer_class = ModuleSerializer
 
 
-class CourseView(generics.RetrieveAPIView):
+class ModuleView(generics.RetrieveAPIView):
     permissions = [permissions.AllowAny]
-    serializer_class = CourseSerializer
+    serializer_class = ModuleSerializer
 
     def get_object(self, *args, **kwargs):
-        course_slug = self.kwargs['course_slug']
-        course = Course.objects.get(slug=course_slug)
-        return course
+        module_slug = self.kwargs['module_slug']
+        module = Module.objects.get(slug=module_slug)
+        return module
 
 
 class ThemesListView(generics.ListAPIView):
@@ -50,9 +50,9 @@ class ThemesListView(generics.ListAPIView):
     serializer_class = ThemeSerializer
 
     def get_queryset(self, *args, **kwargs):
-        course_slug = self.kwargs['course_slug']
-        course = Course.objects.get(slug=course_slug)
-        return course.themes.all()
+        module_slug = self.kwargs['module_slug']
+        module = Module.objects.get(slug=module_slug)
+        return module.themes.all()
 
 
 class ThemeView(generics.RetrieveAPIView):
@@ -70,10 +70,10 @@ class LessonsListView(generics.ListAPIView):
     serializer_class = LessonSerializer
 
     def get_queryset(self, *args, **kwargs):
-        course_slug = self.kwargs['course_slug']
+        module_slug = self.kwargs['module_slug']
         theme_slug = self.kwargs['theme_slug']
-        course = Course.objects.get(slug=course_slug)
-        theme = course.themes.get(slug=theme_slug)
+        module = Module.objects.get(slug=module_slug)
+        theme = module.themes.get(slug=theme_slug)
         return theme.lessons.all()
 
 
@@ -103,9 +103,9 @@ class CreateSprintView(generics.CreateAPIView):
     serializer_class = CreateSprintSerializer
 
 
-class CreateCourseView(generics.CreateAPIView):
+class CreateModuleView(generics.CreateAPIView):
     permissions = [permissions.AllowAny]
-    serializer_class = CreateCourseSerializer
+    serializer_class = CreateModuleSerializer
 
 
 class CreateThemeView(generics.CreateAPIView):

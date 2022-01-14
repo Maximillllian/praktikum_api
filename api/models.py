@@ -17,19 +17,19 @@ class Sprint(models.Model):
         return self.title
 
 
-class Course(models.Model):
+class Module(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(blank=True, null=True)
     order = models.IntegerField(default=0)
     image = models.FileField(upload_to='pictures/', validators=[FileExtensionValidator(['svg', 'png', 'jpg', 'jpeg'])], blank=True, null=True)
-    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, related_name='courses', blank=True, null=True)
+    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, related_name='modules', blank=True, null=True)
 
     class Meta:
         ordering = ['title']
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
-        super(Course, self).save(*args, **kwargs)
+        super(Module, self).save(*args, **kwargs)
     
     def __str__(self):
         return self.title
@@ -38,38 +38,38 @@ class Course(models.Model):
 class Theme(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(blank=True, null=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='themes')
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='themes')
 
     class Meta:
         ordering = ['title']
     
-    def themes_of_course(self):
-        themes_of_course = self.course.themes.all()
-        return themes_of_course
+    def themes_of_module(self):
+        themes_of_module = self.module.themes.all()
+        return themes_of_module
     
     def current_theme_index(self):
-        for num, theme in enumerate(self.themes_of_course()):
+        for num, theme in enumerate(self.themes_of_module()):
             if theme.id == self.id:
                 return num
 
     def is_last(self):
-        last_theme = self.themes_of_course().reverse()[0]
+        last_theme = self.themes_of_module().reverse()[0]
         return last_theme.id == self.id
     
     def is_first(self):
-        first_theme = self.themes_of_course()[0]
+        first_theme = self.themes_of_module()[0]
         return first_theme.id == self.id
     
     def next_theme_first_lesson_slug(self):
         if self.is_last():
             return False
-        next_theme = self.themes_of_course()[self.current_theme_index() + 1]
+        next_theme = self.themes_of_module()[self.current_theme_index() + 1]
         return Lesson.objects.filter(theme=next_theme)[0].slug
 
     def prev_theme_slug(self):
         if self.is_first():
             return False
-        return self.themes_of_course()[self.current_theme_index() - 1].slug
+        return self.themes_of_module()[self.current_theme_index() - 1].slug
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)

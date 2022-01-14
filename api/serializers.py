@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Sprint, Course, Theme, Lesson
+from .models import Sprint, Module, Theme, Lesson
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -27,18 +27,18 @@ class ThemeSerializer(serializers.ModelSerializer):
         fields = ['title', 'slug', 'is_last', 'next_theme_first_lesson_slug', 'lessons']
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class ModuleSerializer(serializers.ModelSerializer):
     themes = ThemeSerializer(many=True)
     class Meta:
-        model = Course
+        model = Module
         fields = ['title', 'slug', 'image', 'order', 'themes']
 
 
 class SprintSerializer(serializers.ModelSerializer):
-    courses = CourseSerializer(many=True)
+    modules = ModuleSerializer(many=True)
     class Meta:
         model = Sprint
-        fields = ['title', 'slug', 'courses']
+        fields = ['title', 'slug', 'modules']
 
 
 class CreateSprintSerializer(serializers.ModelSerializer):
@@ -47,24 +47,24 @@ class CreateSprintSerializer(serializers.ModelSerializer):
         fields = ['title']
 
 
-class CreateCourseSerializer(serializers.ModelSerializer):
+class CreateModuleSerializer(serializers.ModelSerializer):
     sprint = serializers.SlugRelatedField(
         slug_field='slug', queryset=Sprint.objects.all()
     )
 
     class Meta:
-        model = Course
+        model = Module
         fields = ['title', 'sprint']
 
 
 class CreateThemeSerializer(serializers.ModelSerializer):
-    course = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Course.objects.all()
+    module = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Module.objects.all()
     )
     
     class Meta:
         model = Theme
-        fields = ['title', 'course']
+        fields = ['title', 'module']
 
 
 class CreateLessonSerializer(serializers.ModelSerializer):
