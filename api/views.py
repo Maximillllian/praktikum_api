@@ -3,7 +3,7 @@ from django.db.models import query
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
-from .serializers import UserSerializer, SprintSerializer, CourseSerializer, ThemeSerializer, LessonSerializer, CreateCourseSerializer, CreateThemeSerializer, CreateLessonSerializer
+from .serializers import UserSerializer, SprintSerializer, CourseSerializer, ThemeSerializer, LessonSerializer, CreateSprintSerializer, CreateCourseSerializer, CreateThemeSerializer, CreateLessonSerializer
 from .models import Sprint, Course, Theme, Lesson
 
 
@@ -17,6 +17,16 @@ class SprintListView(generics.ListAPIView):
     permissions = [permissions.AllowAny]
     queryset = Sprint.objects.all()
     serializer_class = SprintSerializer
+
+
+class SprintView(generics.RetrieveAPIView):
+    permissions = [permissions.AllowAny]
+    serializer_class = SprintSerializer
+
+    def get_object(self, *args, **kwargs):
+        sprint_slug = self.kwargs['sprint_slug']
+        sprint = Sprint.objects.get(slug=sprint_slug)
+        return sprint
 
 
 class CoursesListView(generics.ListAPIView):
@@ -86,6 +96,11 @@ class LessonThemeView(generics.RetrieveAPIView):
         lesson = Lesson.objects.get(slug=lesson_slug)
         return lesson.theme
 # Create your views here.
+
+
+class CreateSprintView(generics.CreateAPIView):
+    permissions = [permissions.AllowAny]
+    serializer_class = CreateSprintSerializer
 
 
 class CreateCourseView(generics.CreateAPIView):

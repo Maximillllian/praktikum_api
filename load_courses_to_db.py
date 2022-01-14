@@ -101,7 +101,10 @@ async def main():
                 sprint_name = sprint_name.replace('[SW.BAND] ', '')
                 lesson_name = '.'.join(file.split('.')[:-1])
 
-                course_data = {"title": course_name}
+                sprint_data = {"title": sprint_name}
+                sprint_slug = await get_or_create_object('sprint', sprint_data)
+
+                course_data = {"title": course_name, "sprint": sprint_slug}
                 course_slug = await get_or_create_object('course', course_data)
 
                 theme_data = {"title": theme_name, "course": course_slug}

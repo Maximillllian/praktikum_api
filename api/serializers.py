@@ -41,11 +41,20 @@ class SprintSerializer(serializers.ModelSerializer):
         fields = ['title', 'slug', 'courses']
 
 
+class CreateSprintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sprint
+        fields = ['title']
+
 
 class CreateCourseSerializer(serializers.ModelSerializer):
+    sprint = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Sprint.objects.all()
+    )
+
     class Meta:
         model = Course
-        fields = ['title']
+        fields = ['title', 'sprint']
 
 
 class CreateThemeSerializer(serializers.ModelSerializer):
