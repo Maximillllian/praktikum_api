@@ -15,6 +15,7 @@ auth_urlpatterns = [
 urlpatterns = [
     path('', include(router.urls)),
     path('auth/', include(auth_urlpatterns)),
+    path('sprints/', views.SprintListView.as_view(), name='sprints_list'),
     path('courses/', views.CoursesListView.as_view(), name='courses_list'),
     path('course/<slug:course_slug>', views.CourseView.as_view(), name='course'),
     path('theme/<slug:theme_slug>', views.ThemeView.as_view(), name='theme'),

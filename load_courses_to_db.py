@@ -27,22 +27,23 @@ def print_tree_items(root, dirs, files):
 
 
 def path_array(root, to_replace):
-    path = root.replace(FIRST_SPRINT, '')
+    path = root.replace(to_replace, '')
     path_array = re.split(r'\\', path)
     return path_array
 
 
-def parse_course_and_theme_name(path_array): 
-    course_name = path_array[1]
+def parse_sprint_course_and_theme_name(path_array): 
+    sprint_name = path_array[1]
+    course_name = path_array[2]
 
-    if len(path_array) == 3:
+    if len(path_array) == 4:
         theme_name = course_name
-    elif len(path_array) > 2:
-        theme_name = path_array[2]
+    elif len(path_array) > 3:
+        theme_name = path_array[3]
     else:
         theme_name = course_name
     
-    return course_name, theme_name
+    return sprint_name, course_name, theme_name
 
 
 async def post_data(type, data):
@@ -81,10 +82,10 @@ async def get_or_create_object(type, data):
 
 LESSONS_PATH = r'D:\Courses\Yandex.Designer_interfaces\[SW.BAND] [Яндекс.Практикум] Профессия Дизайнер интерфейсов (2020) [Часть 1 из 7]\[SW.BAND] [Яндекс.Практикум] Профессия Дизайнер интерфейсов (2020) [Часть 1 из 7]'
 FIRST_SPRINT = r'D:\designer_interfaces\[SW.BAND] 1 спринт'
+SPRINTS_DIR = r'D:\designer_interfaces'
 
 
-tree = os.walk(FIRST_SPRINT, topdown=True, onerror=walk_error)
-scan_dirs = os.scandir(LESSONS_PATH)
+tree = os.walk(SPRINTS_DIR, topdown=True, onerror=walk_error)
 courses = []
 themes = []
 order = 0
@@ -95,8 +96,9 @@ async def main():
         for file in files:
             file_extension = file.split('.')[-1]
             if file_extension in ('html', 'txt'):
-                path = path_array(root, LESSONS_PATH)
-                course_name, theme_name = parse_course_and_theme_name(path)
+                path = path_array(root, SPRINTS_DIR)
+                sprint_name, course_name, theme_name = parse_sprint_course_and_theme_name(path)
+                sprint_name = sprint_name.replace('[SW.BAND] ', '')
                 lesson_name = '.'.join(file.split('.')[:-1])
 
                 course_data = {"title": course_name}
@@ -113,15 +115,20 @@ async def main():
                 lesson_data = {"title": lesson_name, "theme": theme_slug, "text": raw_html, "order": order}
                 lesson_slug = await get_or_create_object('lesson', lesson_data)
 
-                order += 1
                 # cprint(f'Создали курс с респонзем: {res},\n сам курс - {course}', 'cyan')
-                # finded_course = models.Course.objects.get_or_create(title=course_name)[0]
+                # finded_sprint = models.Sprint.objects.get_or_create(title=sprint_name)[0]
+                # finded_course = models.Course.objects.get_or_create(title=course_name, sprint=finded_sprint)[0]
 
                 # theme = models.Theme.objects.get_or_create(title=theme_name, course=finded_course)
                 # finded_theme = theme[0]
 
-                # finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
+                # if finded_theme.title not in themes:
+                #     order = 0
+                #     themes.append(finded_theme.title)
 
+                # finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
+                order += 1
         
 
 asyncio.run(main())
+# main()

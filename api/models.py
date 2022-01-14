@@ -4,11 +4,25 @@ from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
 
+
+class Sprint(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Sprint, self).save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.title
+
+
 class Course(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(blank=True, null=True)
     order = models.IntegerField(default=0)
     image = models.FileField(upload_to='pictures/', validators=[FileExtensionValidator(['svg', 'png', 'jpg', 'jpeg'])], blank=True, null=True)
+    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, related_name='courses', blank=True, null=True)
 
     class Meta:
         ordering = ['title']

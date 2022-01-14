@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Theme, Lesson
+from .models import Sprint, Course, Theme, Lesson
 
 
 class ThemeInline(admin.TabularInline):
@@ -14,6 +14,10 @@ class LessonInline(admin.TabularInline):
     readonly_fields = ['order', 'title']
 
 
+class SprintAdmin(admin.ModelAdmin):
+    pass
+
+
 class CourseAdmin(admin.ModelAdmin):
     inlines = [ThemeInline]
 
@@ -26,6 +30,7 @@ class LessonAdmin(admin.ModelAdmin):
     pass
 
 
+admin.site.register(Sprint, SprintAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Theme, ThemeAdmin)
 admin.site.register(Lesson, LessonAdmin)

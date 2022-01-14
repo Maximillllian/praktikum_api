@@ -1,15 +1,22 @@
 from django.contrib.auth.models import User, Group
+from django.db.models import query
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
-from .serializers import UserSerializer, CourseSerializer, ThemeSerializer, LessonSerializer, CreateCourseSerializer, CreateThemeSerializer, CreateLessonSerializer
-from .models import Course, Theme, Lesson
+from .serializers import UserSerializer, SprintSerializer, CourseSerializer, ThemeSerializer, LessonSerializer, CreateCourseSerializer, CreateThemeSerializer, CreateLessonSerializer
+from .models import Sprint, Course, Theme, Lesson
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permissions = [permissions.AllowAny]
+
+
+class SprintListView(generics.ListAPIView):
+    permissions = [permissions.AllowAny]
+    queryset = Sprint.objects.all()
+    serializer_class = SprintSerializer
 
 
 class CoursesListView(generics.ListAPIView):

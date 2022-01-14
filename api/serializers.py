@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import Course, Theme, Lesson
+from .models import Sprint, Course, Theme, Lesson
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -32,6 +32,14 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['title', 'slug', 'image', 'order', 'themes']
+
+
+class SprintSerializer(serializers.ModelSerializer):
+    courses = CourseSerializer(many=True)
+    class Meta:
+        model = Sprint
+        fields = ['title', 'slug', 'courses']
+
 
 
 class CreateCourseSerializer(serializers.ModelSerializer):
