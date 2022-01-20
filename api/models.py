@@ -89,6 +89,7 @@ class Lesson(models.Model):
     order = models.IntegerField()
     text_file = models.FileField(upload_to='lessons_files/', blank=True, null=True, validators=[FileExtensionValidator(['txt', 'html'])])
     text = models.TextField(blank=True, null=True)
+    webinar_link = models.URLField(blank=True, null=True)
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, related_name='lessons')
     user = models.ManyToManyField(User, related_name='lessons', blank=True)
 

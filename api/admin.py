@@ -5,13 +5,13 @@ from .models import Sprint, Module, Theme, Lesson
 class ThemeInline(admin.TabularInline):
     model = Theme
     fields = ['title']
-    readonly_fields = ['title']
+    # readonly_fields = ['title']
 
 
 class LessonInline(admin.TabularInline):
     model = Lesson
     fields = ['order', 'title']
-    readonly_fields = ['order', 'title']
+    # readonly_fields = ['order', 'title']
 
 
 class SprintAdmin(admin.ModelAdmin):
