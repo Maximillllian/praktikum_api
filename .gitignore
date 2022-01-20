@@ -1,3 +1,9 @@
+/media/*
+!/media/pictures/
+/media/pictures/*
+!/media/pictures/webinar.svg
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

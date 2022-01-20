@@ -29,6 +29,9 @@ class Module(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
+        if self.title == 'Вебинары':
+            self.image = 'pictures/webinar.svg'
+            self.slug += self.sprint.slug
         super(Module, self).save(*args, **kwargs)
     
     def __str__(self):

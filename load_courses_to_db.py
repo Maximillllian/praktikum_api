@@ -80,7 +80,7 @@ modules = []
 themes = []
 order = 0
 
-def main():
+async def main():
     for root, dirs, files in tree:
     
         for file in files:
@@ -92,36 +92,36 @@ def main():
                 lesson_name = '.'.join(file.split('.')[:-1])
                 raw_html = compress_html(f'{root}\{file}')
 
-                # sprint_data = {"title": sprint_name}
-                # sprint_slug = await get_or_create_object('sprint', sprint_data)
+                sprint_data = {"title": sprint_name}
+                sprint_slug = await get_or_create_object('sprint', sprint_data)
 
-                # module_data = {"title": module_name, "sprint": sprint_slug}
-                # module_slug = await get_or_create_object('module', module_data)
+                module_data = {"title": module_name, "sprint": sprint_slug}
+                module_slug = await get_or_create_object('module', module_data)
 
-                # theme_data = {"title": theme_name, "module": module_slug}
-                # theme_slug = await get_or_create_object('theme', theme_data)
+                theme_data = {"title": theme_name, "module": module_slug}
+                theme_slug = await get_or_create_object('theme', theme_data)
 
-                # if theme_slug not in themes:
-                #     order = 0
-                #     themes.append(theme_slug)
+                if theme_slug not in themes:
+                    order = 0
+                    themes.append(theme_slug)
                     
-                # lesson_data = {"title": lesson_name, "theme": theme_slug, "text": raw_html, "order": order}
-                # lesson_slug = await get_or_create_object('lesson', lesson_data)
+                lesson_data = {"title": lesson_name, "theme": theme_slug, "text": raw_html, "order": order}
+                lesson_slug = await get_or_create_object('lesson', lesson_data)
 
                 # cprint(f'Создали курс с респонзем: {res},\n сам курс - {module}', 'cyan')
-                finded_sprint = models.Sprint.objects.get_or_create(title=sprint_name)[0]
-                finded_module = models.Module.objects.get_or_create(title=module_name, sprint=finded_sprint)[0]
+                # finded_sprint = models.Sprint.objects.get_or_create(title=sprint_name)[0]
+                # finded_module = models.Module.objects.get_or_create(title=module_name, sprint=finded_sprint)[0]
 
-                theme = models.Theme.objects.get_or_create(title=theme_name, module=finded_module)
-                finded_theme = theme[0]
+                # theme = models.Theme.objects.get_or_create(title=theme_name, module=finded_module)
+                # finded_theme = theme[0]
 
-                if finded_theme.title not in themes:
-                    order = 0
-                    themes.append(finded_theme.title)
+                # if finded_theme.title not in themes:
+                #     order = 0
+                #     themes.append(finded_theme.title)
 
-                finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
+                # finded_lesson = models.Lesson.objects.get_or_create(title=lesson_name, theme=finded_theme, text=raw_html, order=order)[0]
                 order += 1
         
 
-# asyncio.run(main())
-main()
+asyncio.run(main())
+# main()
