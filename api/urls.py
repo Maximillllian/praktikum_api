@@ -12,9 +12,7 @@ auth_urlpatterns = [
     path('', include('rest_registration.api.urls'))
 ]
 
-urlpatterns = [
-    path('', include(router.urls)),
-    path('auth/', include(auth_urlpatterns)),
+get_urlpatterns = [
     path('sprints/', views.SprintListView.as_view(), name='sprints_list'),
     path('sprint/<slug:sprint_slug>', views.SprintView.as_view(), name="sprint"),
     path('modules/', views.ModulesListView.as_view(), name='modules_list'),
@@ -22,13 +20,26 @@ urlpatterns = [
     path('theme/<slug:theme_slug>', views.ThemeView.as_view(), name='theme'),
     path('lesson/<slug:lesson_slug>', views.LessonView.as_view(), name='lesson'),
     path('lesson/<slug:lesson_slug>/theme', views.LessonThemeView.as_view(), name='theme'),
+
+    path('module/<slug:module_slug>/themes/', views.ThemesListView.as_view(), name='themes_list'),
+    path('module/<slug:module_slug>/theme/<slug:theme_slug>/', views.ThemeView.as_view(), name='theme'),
+    path('module/<slug:module_slug>/theme/<slug:theme_slug>/lessons', views.LessonsListView.as_view(), name='lessons_list'),
+]
+
+create_urlpatterns = [
     path('create/sprint', views.CreateSprintView.as_view(), name='create_sprint'),
     path('create/module', views.CreateModuleView.as_view(), name='create_module'),
     path('create/theme', views.CreateThemeView.as_view(), name='create_theme'),
     path('create/lesson', views.CreateLessonView.as_view(), name='create_lesson'),
-    path('module/<slug:module_slug>/themes/', views.ThemesListView.as_view(), name='themes_list'),
-    path('module/<slug:module_slug>/theme/<slug:theme_slug>/', views.ThemeView.as_view(), name='theme'),
-    path('module/<slug:module_slug>/theme/<slug:theme_slug>/lessons', views.LessonsListView.as_view(), name='lessons_list'),
-    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+]
+
+urlpatterns = [
+    path('', include(router.urls)),
+    path('auth/', include(auth_urlpatterns)),
+    path('', include(get_urlpatterns)),
+    path('', include(create_urlpatterns)),
+
+    path('complete/lesson/<slug:lesson_slug>/', views.CompleteLessonView.as_view(), name='complete_lesson'),
+    
 ]
 

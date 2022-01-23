@@ -10,7 +10,7 @@ class ThemeInline(admin.TabularInline):
 
 class LessonInline(admin.TabularInline):
     model = Lesson
-    fields = ['order', 'title']
+    fields = ['order', 'title', 'webinar_link']
     # readonly_fields = ['order', 'title']
 
 

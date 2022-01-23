@@ -76,7 +76,6 @@ class Theme(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
-        # self.is_last()
         super(Theme, self).save(*args, **kwargs)
     
     def __str__(self):
@@ -91,7 +90,7 @@ class Lesson(models.Model):
     text = models.TextField(blank=True, null=True)
     webinar_link = models.URLField(blank=True, null=True)
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, related_name='lessons')
-    user = models.ManyToManyField(User, related_name='lessons', blank=True)
+    completed_users = models.ManyToManyField(User, blank=True, related_name="completed_lessons")
 
     class Meta:
         ordering = ['order']

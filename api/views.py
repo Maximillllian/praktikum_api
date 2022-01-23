@@ -3,7 +3,8 @@ from django.db.models import query
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import permissions
-from .serializers import UserSerializer, SprintSerializer, ModuleSerializer, ThemeSerializer, LessonSerializer, CreateSprintSerializer, CreateModuleSerializer, CreateThemeSerializer, CreateLessonSerializer
+from rest_framework.response import Response
+from .serializers import LessonUsersSerializer, UserSerializer, SprintSerializer, ModuleSerializer, ThemeSerializer, LessonSerializer, CreateSprintSerializer, CreateModuleSerializer, CreateThemeSerializer, CreateLessonSerializer
 from .models import Sprint, Module, Theme, Lesson
 
 
@@ -87,6 +88,26 @@ class LessonView(generics.RetrieveAPIView):
         return lesson
 
 
+class CompleteLessonView(generics.UpdateAPIView):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonUsersSerializer
+    permissions = [permissions.IsAuthenticated]
+
+    def get_object(self, *args, **kwargs):
+        lesson_slug = self.kwargs['lesson_slug']
+        lesson = Lesson.objects.get(slug=lesson_slug)
+        return lesson
+
+    def update(self, *args, **kwargs):
+        lesson = self.get_object()
+        user = self.request.user
+        if user.username:
+            lesson.completed_users.add(user)
+            lesson.save()
+
+            return Response({"message": "Success updated"})
+
+
 class LessonThemeView(generics.RetrieveAPIView):
     permissions = [permissions.AllowAny]
     serializer_class = ThemeSerializer
@@ -95,7 +116,7 @@ class LessonThemeView(generics.RetrieveAPIView):
         lesson_slug = self.kwargs['lesson_slug']
         lesson = Lesson.objects.get(slug=lesson_slug)
         return lesson.theme
-# Create your views here.
+
 
 
 class CreateSprintView(generics.CreateAPIView):

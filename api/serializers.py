@@ -9,9 +9,19 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ShortLessonSerializer(serializers.ModelSerializer):
+    is_complete = serializers.SerializerMethodField()
+
+    def get_is_complete(self, obj, *args, **kwargs):
+        username = self.context['request'].user.username
+        if username:
+            completed_users = obj.completed_users.all()
+            is_complete = any(list(map(lambda user: user.username == username, completed_users)))
+            return is_complete
+        return False
+
     class Meta:
         model = Lesson
-        exclude = ['text_file', 'text', 'user']
+        exclude = ['text_file', 'text', 'completed_users']
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -20,8 +30,15 @@ class LessonSerializer(serializers.ModelSerializer):
         exclude = ['text_file', 'theme']
 
 
+class LessonUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['slug', 'completed_users']
+
+
 class ThemeSerializer(serializers.ModelSerializer):
     lessons = ShortLessonSerializer(many=True)
+
     class Meta:
         model = Theme
         fields = ['title', 'slug', 'is_last', 'next_theme_first_lesson_slug', 'lessons']
