@@ -45,10 +45,14 @@ class ThemeSerializer(serializers.ModelSerializer):
 
 
 class ModuleSerializer(serializers.ModelSerializer):
-    themes = ThemeSerializer(many=True)
+    themes_count = serializers.SerializerMethodField()
+
+    def get_themes_count(self, obj, *args, **kwargs):
+        return len(obj.themes.all())
+
     class Meta:
         model = Module
-        fields = ['title', 'slug', 'image', 'order', 'themes']
+        fields = ['title', 'slug', 'image', 'order', 'themes_count']
 
 
 class SprintSerializer(serializers.ModelSerializer):
