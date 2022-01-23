@@ -27,19 +27,25 @@ def print_tree_items(root, dirs, files):
 
 
 def path_array(root, to_replace):
+    # Split path string to array
     path = root.replace(to_replace, '')
     path_array = re.split(r'\\', path)
     return path_array
 
 
+def replace_ad(string, ad_string='[SW.BAND] '):
+    return string.replace(ad_string, '')
+
+
 def parse_sprint_module_and_theme_name(path_array): 
-    sprint_name = path_array[1]
-    module_name = path_array[2]
+    print(path_array)
+    sprint_name = replace_ad(path_array[1])
+    module_name = replace_ad(path_array[2])
 
     if len(path_array) == 4:
         theme_name = module_name
     elif len(path_array) > 3:
-        theme_name = path_array[3]
+        theme_name = replace_ad(path_array[3])
     else:
         theme_name = module_name
     
@@ -55,7 +61,7 @@ async def post_data(type, data):
 async def get_obj_or_false(type, slug):
     url = f'https://cryptodeputat.pythonanywhere.com/api/{type}/{slug}'
     res = await requests.get(url)
-    cprint(res, 'green')
+    cprint(f'Объект есть? {res}', 'green')
     if res.status_code == 200:
         return res.json()
     return False
@@ -66,6 +72,7 @@ async def get_or_create_object(type, data):
     if object:
         return object['slug']
     res = await post_data(type, data)
+    print(f'Ответ после создание - {res}')
     slug = slugify(res.json()['title'])
     return slug
 
@@ -82,13 +89,14 @@ order = 0
 
 async def main():
     for root, dirs, files in tree:
-    
         for file in files:
+
             file_extension = file.split('.')[-1]
             if file_extension in ('html', 'txt'):
+
+                # Getting sprint, module, theme, lesson name 
                 path = path_array(root, SPRINTS_DIR)
                 sprint_name, module_name, theme_name = parse_sprint_module_and_theme_name(path)
-                sprint_name = sprint_name.replace('[SW.BAND] ', '')
                 lesson_name = '.'.join(file.split('.')[:-1])
                 raw_html = compress_html(f'{root}\{file}')
 

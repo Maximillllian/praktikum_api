@@ -2,6 +2,10 @@ from django.contrib import admin
 from .models import Sprint, Module, Theme, Lesson
 
 
+class ModuleInline(admin.TabularInline):
+    model = Module
+    fields = ['title', 'image']
+
 class ThemeInline(admin.TabularInline):
     model = Theme
     fields = ['title']
@@ -15,7 +19,7 @@ class LessonInline(admin.TabularInline):
 
 
 class SprintAdmin(admin.ModelAdmin):
-    pass
+    inlines = [ModuleInline]
 
 
 class ModuleAdmin(admin.ModelAdmin):
