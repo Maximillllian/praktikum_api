@@ -42,7 +42,7 @@ class ModuleView(generics.RetrieveAPIView):
 
     def get_object(self, *args, **kwargs):
         module_slug = self.kwargs['module_slug']
-        module = Module.objects.get(slug=module_slug)
+        module = Module.objects.prefetch_related('themes').get(slug=module_slug)
         return module
 
 
