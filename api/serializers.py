@@ -21,13 +21,13 @@ class ShortLessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        exclude = ['text_file', 'text', 'completed_users']
+        fields = ['title', 'slug', 'webinar_link', 'is_complete']
 
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        exclude = ['text_file', 'theme']
+        fields = ['title', 'text']
 
 
 class LessonUsersSerializer(serializers.ModelSerializer):
@@ -42,6 +42,14 @@ class ThemeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Theme
         fields = ['title', 'slug', 'is_last', 'next_theme_first_lesson_slug', 'lessons']
+
+
+class ShortThemeSerializer(serializers.ModelSerializer):
+    lessons = ShortLessonSerializer(many=True)
+
+    class Meta:
+        model = Theme
+        fields = ['title', 'lessons']
 
 
 class ModuleSerializer(serializers.ModelSerializer):
@@ -60,7 +68,7 @@ class ShortModuleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Module
-        fields = ['title', 'slug', 'image', 'order', 'themes_count']
+        fields = ['title', 'slug', 'image', 'themes_count']
 
 
 class SprintSerializer(serializers.ModelSerializer):
