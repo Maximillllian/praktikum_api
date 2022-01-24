@@ -9,19 +9,19 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ShortLessonSerializer(serializers.ModelSerializer):
-    is_complete = serializers.SerializerMethodField()
+    # is_complete = serializers.SerializerMethodField()
 
-    def get_is_complete(self, obj, *args, **kwargs):
-        username = self.context['request'].user.username
-        if username:
-            completed_users = obj.completed_users.all()
-            is_complete = any(list(map(lambda user: user.username == username, completed_users)))
-            return is_complete
-        return False
+    # def get_is_complete(self, obj, *args, **kwargs):
+    #     username = self.context['request'].user.username
+    #     if username:
+    #         completed_users = obj.completed_users.all()
+    #         is_complete = any(list(map(lambda user: user.username == username, completed_users)))
+    #         return is_complete
+    #     return False
 
     class Meta:
         model = Lesson
-        fields = ['title', 'slug', 'webinar_link', 'is_complete']
+        fields = ['title', 'slug', 'webinar_link']
 
 
 class LessonSerializer(serializers.ModelSerializer):
