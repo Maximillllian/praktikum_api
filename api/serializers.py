@@ -21,7 +21,7 @@ class ShortLessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
-        fields = ['title', 'slug', 'webinar_link']
+        fields = ['title', 'slug', 'webinar_link', 'is_complete']
 
 
 class LessonSerializer(serializers.ModelSerializer):
