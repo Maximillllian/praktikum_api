@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 import environ
+from requests import get
+
+ip = get('https://api.ipify.org').text
 
 env = environ.Env(
     SECRET_KEY=(str, ''),
@@ -159,5 +162,5 @@ REST_REGISTRATION = {
 
 INTERNAL_IPS = [
     "127.0.0.1",
-    "https://cryptodeputat.pythonanywhere.com/"
+    ip
 ]
