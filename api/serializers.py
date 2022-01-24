@@ -53,7 +53,7 @@ class ShortThemeSerializer(serializers.ModelSerializer):
 
 
 class ModuleSerializer(serializers.ModelSerializer):
-    themes = ThemeSerializer(many=True)
+    themes = ShortThemeSerializer(many=True)
 
     class Meta:
         model = Module
